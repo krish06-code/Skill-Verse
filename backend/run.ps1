@@ -19,6 +19,15 @@ if (Test-Path $envFile) {
     }
 }
 
+$port = if ($env:PORT) { [int]$env:PORT } else { 8081 }
+$existing = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Listen' }
+if ($existing) {
+    $pidToKill = $existing[0].OwningProcess
+    Write-Host "Port $port is currently in use by process $pidToKill. Stopping stale process to free the port..." -ForegroundColor Yellow
+    Stop-Process -Id $pidToKill -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 1
+}
+
 if (Test-Path (Join-Path $PSScriptRoot "mvnw.cmd")) {
     & (Join-Path $PSScriptRoot "mvnw.cmd") spring-boot:run
 } else {
