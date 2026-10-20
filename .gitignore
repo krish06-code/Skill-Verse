@@ -26,12 +26,13 @@ backend/target/
 
 # Environment files and credentials
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+!.env.*.example
 backend/.env
-backend/.env.local
+backend/.env.*
+!backend/.env.example
+!backend/.env.*.example
 *.local
 
 # Logs

@@ -82,19 +82,25 @@ cd skill-verse
 
 ---
 
-### Step 2: Configure Environment Variables (Optional)
+### Step 2: Configure Environment Variables
 
-1. **Frontend:** Copy `.env.example` to `.env` if you wish to override the API endpoint:
-   ```bash
-   cp .env.example .env
+1. **Backend Environment Variables (`backend/.env`):**
+   Copy `backend/.env.example` to `backend/.env` (this file is excluded by `.gitignore` and will never be committed):
+   ```powershell
+   Copy-Item backend/.env.example backend/.env
    ```
-   *(Default points to `http://localhost:8081/api`)*
+   Open `backend/.env` and configure your credentials:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string.
+     > **Note:** If your database username or password includes special characters (`@`, `:`, `/`, `?`, `#`, `%`), ensure they are URL-encoded (e.g., replace `@` with `%40`).
+   - `JWT_SECRET`: A secure random secret string of at least 32 characters (64 characters recommended).
+     > **Note:** Rotating the JWT secret will invalidate existing sessions, requiring users to log in again. Password hashes are stored securely with BCrypt and remain unaffected.
 
-2. **Backend:** Copy `backend/.env.example` to `backend/.env` or set environment variables:
-   ```bash
-   cp backend/.env.example backend/.env
+2. **Frontend Environment Variables (`.env` — Optional):**
+   Copy `.env.example` to `.env` if you wish to override the backend API base URL:
+   ```powershell
+   Copy-Item .env.example .env
    ```
-   *(Defaults are pre-configured in `backend/src/main/resources/application.properties`)*
+   *(Defaults to `http://localhost:8081/api` if omitted).*
 
 ---
 
@@ -104,13 +110,21 @@ You will need **two terminal tabs**.
 
 #### Terminal 1 — Start Backend (Spring Boot)
 
+Navigate to the `backend` folder and run the startup script:
+
 ```powershell
 cd backend
+.\run.ps1
+```
+
+*(Alternatively, set the environment variables in your terminal session and start manually:)*
+```powershell
+$env:MONGODB_URI="mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/skillverse?retryWrites=true&w=majority"
+$env:JWT_SECRET="your-64-character-secret"
 mvn spring-boot:run
 ```
-*(On Windows, you can also run `.\mvnw.cmd spring-boot:run`)*
 
-Wait for:
+Wait until you see:
 ```text
 Tomcat started on port 8081 (http) with context path '/api'
 Started SkillVerseApplication in ... seconds
@@ -118,20 +132,27 @@ Started SkillVerseApplication in ... seconds
 
 #### Terminal 2 — Start Frontend (Vite)
 
-In the project root directory (`skill-verse`):
+In the project root directory (`d:\skill-verse`):
 
 ```powershell
 npm install
 npm run dev
 ```
 
-Wait for:
+Wait until you see:
 ```text
 VITE ready in ... ms
 ➜  Local:   http://localhost:8080/
 ```
 
 Open your browser to **`http://localhost:8080`**.
+
+---
+
+### Step 4: Stopping and Restarting
+
+- **To Stop:** Press `Ctrl + C` in each terminal window (enter `Y` if prompted).
+- **To Restart:** Simply rerun `.\run.ps1` in the backend terminal and `npm run dev` in the frontend terminal.
 
 ---
 
