@@ -1,17 +1,13 @@
-
 /**
  * Central API configuration.
- *
- * The backend is a separate Java Spring Boot REST API backed by MongoDB Atlas.
- * Start it from the /backend folder; the base URL can be overridden with
- * VITE_API_BASE_URL.
+ * Backend: Spring Boot + MongoDB Atlas
  */
 
-export const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-  "http://localhost:8081/api";
+const configuredApiUrl = import.meta.env.VITE_API_BASE_URL;
 
-console.log("SkillVerse API Base URL:", API_BASE_URL);
+export const API_BASE_URL = (
+  configuredApiUrl || "http://localhost:8081/api"
+).replace(/\/+$/, "");
 
 const TOKEN_KEY = "skillverse_token";
 
@@ -61,8 +57,8 @@ export async function apiRequest<T>(
     });
   } catch {
     throw new ApiError(
-      "Cannot reach the server. Make sure the Skill Verse backend is running.",
-      0
+      "Cannot reach the server. Please try again.",
+      0,
     );
   }
 
@@ -70,11 +66,11 @@ export async function apiRequest<T>(
     let message = `Request failed (${response.status})`;
 
     try {
-      const data = (await response.json()) as { message?: string };
+      const data = (await response.json()) as {
+        message?: string;
+      };
 
-      if (data?.message) {
-        message = data.message;
-      }
+      if (data?.message) message = data.message;
     } catch {
       // Response had no JSON body
     }
@@ -82,9 +78,7 @@ export async function apiRequest<T>(
     throw new ApiError(message, response.status);
   }
 
-  if (response.status === 204) {
-    return undefined as T;
-  }
+  if (response.status === 204) return undefined as T;
 
   return (await response.json()) as T;
 }
