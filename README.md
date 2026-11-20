@@ -293,6 +293,28 @@ Copy `.env.example` to `.env`:
 | :--- | :--- | :--- |
 | `VITE_API_BASE_URL` | `http://localhost:8081/api` | Base URL pointing to the Spring Boot REST API |
 
+### Production deployment
+
+`VITE_API_BASE_URL` is embedded into the frontend at build time. In Vercel,
+set it for the **Production** environment to the public HTTPS address of the
+deployed backend, including `/api`, for example:
+
+```text
+VITE_API_BASE_URL=https://your-backend.example.com/api
+```
+
+Then redeploy the Vercel project. Do not use `localhost` here: in a visitor's
+browser it refers to that visitor's own device, not the deployed backend.
+
+On the backend host, set these variables to allow the Vercel frontend:
+
+```text
+CORS_ORIGINS=https://skill-verse-one.vercel.app
+APP_BASE_URL=https://skill-verse-one.vercel.app
+```
+
+Keep any local origins you need in `CORS_ORIGINS`, separated by commas.
+
 ---
 
 ## Quick Start Guide

@@ -4,9 +4,10 @@
  */
 
 const configuredApiUrl = import.meta.env.VITE_API_BASE_URL;
+const isProduction = import.meta.env.PROD;
 
 export const API_BASE_URL = (
-  configuredApiUrl || "http://localhost:8081/api"
+  configuredApiUrl || (isProduction ? "" : "http://localhost:8081/api")
 ).replace(/\/+$/, "");
 
 const TOKEN_KEY = "skillverse_token";
@@ -40,6 +41,13 @@ export async function apiRequest<T>(
   path: string,
   options: { method?: string; body?: unknown } = {},
 ): Promise<T> {
+  if (!API_BASE_URL) {
+    throw new ApiError(
+      "The production API URL is not configured. Set VITE_API_BASE_URL and redeploy.",
+      0,
+    );
+  }
+
   const token = getToken();
 
   let response: Response;
