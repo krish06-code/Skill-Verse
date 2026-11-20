@@ -94,8 +94,10 @@ Capped at 100.
 
 ## 6. Frontend connection
 
-The frontend reads `VITE_API_BASE_URL` (default `http://localhost:8081/api`).
-Keep this backend running while using the app.
+The frontend reads `VITE_API_BASE_URL`. For local development it defaults to
+`http://localhost:8081/api`; for a deployed frontend it must be the public
+HTTPS backend URL plus `/api`. Configure the backend's `CORS_ORIGINS` with the
+exact deployed frontend origin, such as `https://skill-verse-one.vercel.app`.
 
 ## 7. Profile photos
 
