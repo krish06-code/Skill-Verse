@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authService } from "@/services/authService";
 import { useAuth } from "@/context/AuthContext";
+import { AuthShell } from "@/components/AuthShell";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -44,11 +45,14 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-12">
-      <Card className="w-full max-w-md">
+    <AuthShell>
+      <Card className="w-full max-w-md border-0 shadow-none">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>Welcome back to Skill Verse.</CardDescription>
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">Welcome back</p>
+          <CardTitle className="mt-2 text-3xl tracking-tight">Sign in to SkillVerse</CardTitle>
+          <CardDescription className="text-base">
+            Pick up where your next exchange begins.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -80,7 +84,7 @@ function LoginPage() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
+            <Button type="submit" className="h-11 w-full rounded-xl" disabled={submitting}>
               {submitting ? "Logging in..." : "Login"}
             </Button>
           </form>
@@ -95,6 +99,6 @@ function LoginPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
+    </AuthShell>
   );
 }

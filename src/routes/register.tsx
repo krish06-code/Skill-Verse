@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authService } from "@/services/authService";
 import { useAuth } from "@/context/AuthContext";
+import { AuthShell } from "@/components/AuthShell";
+import { BookOpen, GraduationCap, Repeat2 } from "lucide-react";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -34,6 +36,7 @@ const emptyForm = {
   college: "",
   branch: "",
   year: "",
+  joinAs: "both" as "giver" | "learner" | "both",
 };
 
 function RegisterPage() {
@@ -63,7 +66,12 @@ function RegisterPage() {
         year: form.year,
       });
       login(user, token);
-      navigate({ to: "/dashboard" });
+      if (form.joinAs === "giver" || form.joinAs === "both") {
+        toast.success("Your account is ready. Add the skills you can teach to get matched.");
+        navigate({ to: "/profile/edit" });
+      } else {
+        navigate({ to: "/dashboard" });
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not create your account. Please try again.",
@@ -74,14 +82,62 @@ function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-12">
-      <Card className="w-full max-w-lg">
+    <AuthShell>
+      <Card className="w-full max-w-lg border-0 shadow-none">
         <CardHeader>
-          <CardTitle>Create Account</CardTitle>
-          <CardDescription>Join Skill Verse and start exchanging skills.</CardDescription>
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">
+            Start your journey
+          </p>
+          <CardTitle className="mt-2 text-3xl tracking-tight">Create your profile</CardTitle>
+          <CardDescription className="text-base">
+            Tell us a little about yourself. Skills come next.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium text-foreground">
+                How do you want to join?
+              </legend>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {[
+                  {
+                    value: "giver" as const,
+                    title: "Skill giver",
+                    detail: "I can teach",
+                    icon: GraduationCap,
+                  },
+                  {
+                    value: "learner" as const,
+                    title: "Learner",
+                    detail: "I want to learn",
+                    icon: BookOpen,
+                  },
+                  { value: "both" as const, title: "Both", detail: "Teach & learn", icon: Repeat2 },
+                ].map(({ value, title, detail, icon: Icon }) => (
+                  <label
+                    key={value}
+                    className={`cursor-pointer rounded-xl border p-3 transition-colors ${
+                      form.joinAs === value
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-border bg-white text-muted-foreground hover:border-primary/40"
+                    }`}
+                  >
+                    <input
+                      className="sr-only"
+                      type="radio"
+                      name="joinAs"
+                      value={value}
+                      checked={form.joinAs === value}
+                      onChange={() => update("joinAs", value)}
+                    />
+                    <Icon className="h-4 w-4" />
+                    <span className="mt-2 block text-sm font-semibold">{title}</span>
+                    <span className="block text-xs">{detail}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <Input
@@ -153,7 +209,7 @@ function RegisterPage() {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
+            <Button type="submit" className="h-11 w-full rounded-xl" disabled={submitting}>
               {submitting ? "Creating account..." : "Create Account"}
             </Button>
           </form>
@@ -165,6 +221,6 @@ function RegisterPage() {
           </p>
         </CardContent>
       </Card>
-    </div>
+    </AuthShell>
   );
 }

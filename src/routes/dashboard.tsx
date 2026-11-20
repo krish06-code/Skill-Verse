@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Award, BookOpen, GraduationCap, Users } from "lucide-react";
+import { ArrowRight, Award, BookOpen, GraduationCap, Sparkles, Users } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { StatCard } from "@/components/StatCard";
 import { StudentCard } from "@/components/StudentCard";
@@ -66,7 +66,33 @@ function DashboardPage() {
       title={`Welcome, ${user.name}`}
       description="Here is a quick overview of your skill exchange activity."
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="relative overflow-hidden rounded-3xl bg-[#20254b] px-6 py-7 text-white shadow-xl shadow-indigo-950/15 sm:px-8">
+        <div className="relative z-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+          <div>
+            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.16em] text-indigo-300">
+              <Sparkles className="h-4 w-4" /> Your exchange journey
+            </p>
+            <h2 className="mt-3 max-w-xl text-2xl font-bold tracking-tight sm:text-3xl">
+              Share what you know. Find what moves you forward.
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Your best next learning connection is waiting in the community.
+            </p>
+          </div>
+          <Button
+            asChild
+            variant="secondary"
+            className="rounded-xl bg-white text-slate-900 hover:bg-slate-100"
+          >
+            <Link to="/find-students">
+              Find a match <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="absolute -right-12 -top-20 h-56 w-56 rounded-full bg-indigo-400/30 blur-3xl" />
+      </section>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Skills I can teach"
           value={user.teachSkills.length}
@@ -92,7 +118,9 @@ function DashboardPage() {
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Recommended Skill Matches</h2>
+            <h2 className="text-xl font-bold tracking-tight text-foreground">
+              Recommended for you
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Students whose skills complement yours, ranked by match score.
             </p>

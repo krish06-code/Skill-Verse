@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authService } from "@/services/authService";
+import { AuthShell } from "@/components/AuthShell";
 
 export const Route = createFileRoute("/reset-password")({
   validateSearch: z.object({ token: z.string().optional() }),
@@ -54,8 +55,8 @@ function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-12">
-      <Card className="w-full max-w-md">
+    <AuthShell>
+      <Card className="w-full max-w-md border-0 shadow-none">
         <CardHeader>
           <CardTitle>Choose a new password</CardTitle>
           <CardDescription>Enter and confirm your new password.</CardDescription>
@@ -101,6 +102,6 @@ function ResetPasswordPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </AuthShell>
   );
 }

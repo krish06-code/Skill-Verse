@@ -10,6 +10,7 @@ import {
   User,
   Users,
   X,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
@@ -46,9 +47,9 @@ export function AppLayout({ title, description, children }: AppLayoutProps) {
           key={to}
           to={to}
           onClick={() => setOpen(false)}
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white"
           activeProps={{
-            className: "bg-foreground text-background hover:bg-foreground hover:text-background",
+            className: "bg-white/12 text-white shadow-sm hover:bg-white/12 hover:text-white",
           }}
         >
           <Icon className="h-4 w-4" />
@@ -58,7 +59,7 @@ export function AppLayout({ title, description, children }: AppLayoutProps) {
       <button
         type="button"
         onClick={handleLogout}
-        className="mt-1 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        className="mt-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300 transition-all hover:bg-white/10 hover:text-white"
       >
         <LogOut className="h-4 w-4" />
         Logout
@@ -67,10 +68,16 @@ export function AppLayout({ title, description, children }: AppLayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-muted/40">
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background px-4 py-3 lg:hidden">
-        <Link to="/dashboard" className="text-base font-semibold">
-          Skill Verse
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,oklch(0.93_0.05_270),transparent_30%),oklch(0.985_0.006_264)]">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-sidebar px-4 py-3 text-white lg:hidden">
+        <Link
+          to="/dashboard"
+          className="flex items-center gap-2 text-base font-semibold tracking-tight"
+        >
+          <span className="brand-mark grid h-7 w-7 place-items-center rounded-lg">
+            <Sparkles className="h-3.5 w-3.5" />
+          </span>
+          SkillVerse
         </Link>
         <Button
           variant="ghost"
@@ -82,30 +89,41 @@ export function AppLayout({ title, description, children }: AppLayoutProps) {
         </Button>
       </header>
 
-      {open ? (
-        <div className="border-b border-border bg-background px-4 py-3 lg:hidden">{nav}</div>
-      ) : null}
+      {open ? <div className="border-b border-white/10 bg-sidebar px-4 py-3">{nav}</div> : null}
 
       <div className="flex">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-background p-4 lg:flex">
-          <Link to="/dashboard" className="px-3 py-2 text-lg font-semibold tracking-tight">
-            Skill Verse
+        <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-white/10 bg-sidebar p-4 text-white lg:flex">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 px-3 py-3 text-lg font-semibold tracking-tight"
+          >
+            <span className="brand-mark grid h-9 w-9 place-items-center rounded-xl">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            SkillVerse
           </Link>
-          <div className="mt-6 flex-1">{nav}</div>
+          <div className="mt-8 flex-1">{nav}</div>
           {user ? (
-            <div className="rounded-md border border-border p-3">
-              <p className="truncate text-sm font-medium">{user.name}</p>
-              <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5">
+              <p className="truncate text-sm font-semibold">{user.name}</p>
+              <p className="mt-0.5 truncate text-xs text-slate-400">{user.email}</p>
             </div>
           ) : null}
         </aside>
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-5xl">
-            <div className="mb-6">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+        <main className="min-w-0 flex-1 px-4 py-7 sm:px-7 lg:px-10">
+          <div className="mx-auto w-full max-w-6xl">
+            <div className="mb-8">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                Skill exchange workspace
+              </p>
+              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-[2rem]">
+                {title}
+              </h1>
               {description ? (
-                <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                  {description}
+                </p>
               ) : null}
             </div>
             {children}

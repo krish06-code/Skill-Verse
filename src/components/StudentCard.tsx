@@ -45,7 +45,7 @@ export function StudentCard({
   const hasHighlights = teachList.length > 0 || learnList.length > 0;
 
   return (
-    <Card className="h-full transition-shadow hover:shadow-md">
+    <Card className="surface-card h-full border-border/70 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
       <CardContent className="flex h-full flex-col gap-4 p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -63,7 +63,7 @@ export function StudentCard({
           </div>
           {matchPercentage !== undefined ? (
             <div className="flex shrink-0 flex-col items-end gap-1">
-              <span className="rounded-md border border-border bg-muted px-2 py-1 text-xs font-semibold">
+              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
                 {matchPercentage}% Match
               </span>
               {match?.twoWay ? (
@@ -76,7 +76,7 @@ export function StudentCard({
         </div>
 
         {hasHighlights ? (
-          <div className="space-y-2 rounded-md border border-border bg-muted/40 p-3 text-xs">
+          <div className="space-y-2 rounded-xl border border-indigo-100 bg-indigo-50/55 p-3 text-xs">
             {teachList.length > 0 ? (
               <p className="text-muted-foreground">
                 <span className="font-medium text-foreground">Can teach you:</span>{" "}
