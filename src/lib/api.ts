@@ -1,3 +1,4 @@
+
 /**
  * Central API configuration.
  *
@@ -5,8 +6,12 @@
  * Start it from the /backend folder; the base URL can be overridden with
  * VITE_API_BASE_URL.
  */
+
 export const API_BASE_URL =
-  (import.meta.env["VITE_API_BASE_URL"] as string | undefined) ?? "http://localhost:8081/api";
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
+  "http://localhost:8081/api";
+
+console.log("SkillVerse API Base URL:", API_BASE_URL);
 
 const TOKEN_KEY = "skillverse_token";
 
@@ -17,12 +22,17 @@ export function getToken(): string | null {
 
 export function setToken(token: string | null) {
   if (typeof window === "undefined") return;
-  if (token) window.localStorage.setItem(TOKEN_KEY, token);
-  else window.localStorage.removeItem(TOKEN_KEY);
+
+  if (token) {
+    window.localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    window.localStorage.removeItem(TOKEN_KEY);
+  }
 }
 
 export class ApiError extends Error {
   status: number;
+
   constructor(message: string, status: number) {
     super(message);
     this.name = "ApiError";
@@ -37,6 +47,7 @@ export async function apiRequest<T>(
   const token = getToken();
 
   let response: Response;
+
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method ?? "GET",
@@ -44,23 +55,36 @@ export async function apiRequest<T>(
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
+      ...(options.body !== undefined
+        ? { body: JSON.stringify(options.body) }
+        : {}),
     });
   } catch {
-    throw new ApiError("Cannot reach the server. Make sure the Skill Verse backend is running.", 0);
+    throw new ApiError(
+      "Cannot reach the server. Make sure the Skill Verse backend is running.",
+      0
+    );
   }
 
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
+
     try {
       const data = (await response.json()) as { message?: string };
-      if (data?.message) message = data.message;
+
+      if (data?.message) {
+        message = data.message;
+      }
     } catch {
-      // response had no JSON body
+      // Response had no JSON body
     }
+
     throw new ApiError(message, response.status);
   }
 
-  if (response.status === 204) return undefined as T;
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return (await response.json()) as T;
 }
