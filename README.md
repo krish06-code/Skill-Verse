@@ -15,20 +15,21 @@
   - [5. Core Platform Features in Everyday Terms](#5-core-platform-features-in-everyday-terms)
   - [6. Real-World Use Cases & Scenarios](#6-real-world-use-cases--scenarios)
 - [PART 2: TECHNICAL DEEP-DIVE & ARCHITECTURE](#part-2-technical-deep-dive--architecture)
-  - [7. System Architecture & High-Level Design](#7-system-architecture--high-level-design)
-  - [8. Tech Stack & Engineering Rationale](#8-tech-stack--engineering-rationale)
-  - [9. Frontend Architecture (React 19 & TanStack Start)](#9-frontend-architecture-react-19--tanstack-start)
-  - [10. Backend Architecture (Spring Boot 3 & Security 6)](#10-backend-architecture-spring-boot-3--security-6)
-  - [11. The Complementary Matching Algorithm](#11-the-complementary-matching-algorithm)
-  - [12. Gamification & Reputation Engine](#12-gamification--reputation-engine)
-  - [13. Database Schema & Storage (MongoDB & GridFS)](#13-database-schema--storage-mongodb--gridfs)
-  - [14. Security & Cryptographic Implementations](#14-security--cryptographic-implementations)
-  - [15. Complete REST API Specification](#15-complete-rest-api-specification)
-  - [16. DevOps, Docker & Deployment](#16-devops-docker--deployment)
-  - [17. Step-by-Step Setup & Running Guide](#17-step-by-step-setup--running-guide)
-  - [18. Seeded Demo Accounts](#18-seeded-demo-accounts)
-  - [19. Quality Assurance & Testing Suite](#19-quality-assurance--testing-suite)
-  - [20. Troubleshooting & FAQ](#20-troubleshooting--faq)
+  - [7. Code Observations & Source-Truth Implementation Details](#7-code-observations--source-truth-implementation-details)
+  - [8. System Architecture & High-Level Design](#8-system-architecture--high-level-design)
+  - [9. Tech Stack & Engineering Rationale](#9-tech-stack--engineering-rationale)
+  - [10. Frontend Architecture (React 19 & TanStack Start)](#10-frontend-architecture-react-19--tanstack-start)
+  - [11. Backend Architecture (Spring Boot 3 & Security 6)](#11-backend-architecture-spring-boot-3--security-6)
+  - [12. The Complementary Matching Algorithm](#12-the-complementary-matching-algorithm)
+  - [13. Gamification & Reputation Engine](#13-gamification--reputation-engine)
+  - [14. Database Schema & Storage (MongoDB & GridFS)](#14-database-schema--storage-mongodb--gridfs)
+  - [15. Security & Cryptographic Implementations](#15-security--cryptographic-implementations)
+  - [16. Complete REST API Specification](#16-complete-rest-api-specification)
+  - [17. DevOps, CI/CD & Docker](#17-devops-cicd--docker)
+  - [18. Step-by-Step Setup & Running Guide](#18-step-by-step-setup--running-guide)
+  - [19. Seeded Demo Accounts](#19-seeded-demo-accounts)
+  - [20. Quality Assurance & Testing Suite](#20-quality-assurance--testing-suite)
+  - [21. Troubleshooting & FAQ](#21-troubleshooting--faq)
 
 ---
 
@@ -40,7 +41,7 @@
 
 If Student A knows **Java & Spring Boot** and wants to learn **React**, while Student B excels at **React & UI Design** and wants to master **Java**, Skill-Verse identifies the mutual synergy, scores their match, and facilitates a direct peer-to-peer connection.
 
-The platform combines **intelligent matchmaking**, **gamified reputation systems (skill points & badges)**, **direct messaging**, and **peer reviews** to create a safe, engaging, and collaborative campus learning ecosystem.
+The platform combines **intelligent matchmaking**, **gamified reputation systems (skill points & milestone badges)**, **direct REST messaging**, and **peer reviews** to create a safe, engaging, and collaborative campus learning ecosystem.
 
 ---
 
@@ -59,8 +60,8 @@ College students today face significant learning barriers:
 Skill-Verse solves this through four pillars:
 - **Skill Barter Engine:** Removes financial transactions entirely. Value is exchanged through time, mentorship, and knowledge.
 - **Smart Compatibility Matching:** Instead of endless manual scrolling, an automated matching engine scans student profiles and presents ranked recommendations showing exactly why two students are compatible.
-- **Trust & Reputation (Gamification):** Every accepted connection and positive peer review earns skill points, unlocking recognized badges (*Helpful Mentor*, *Active Learner*, *Great Collaborator*) that display on the student's public profile.
-- **Unified Workspace:** Students can search peers, request connections, chat in real-time, upload profile photos, and review each other after learning sessions—all inside one unified interface.
+- **Trust & Reputation (Gamification):** Every accepted connection and positive peer review earns skill points, contributing to recognized badges (*Helpful Mentor*, *Active Learner*, *Great Collaborator*) that display on the student's public profile.
+- **Unified Workspace:** Students can search peers, request connections, chat via REST messaging, upload profile photos, and review each other after learning sessions—all inside one unified interface.
 
 ---
 
@@ -91,7 +92,7 @@ Skill-Verse solves this through four pillars:
   ┌──────────────────────────────────────────────────────────────┐
   │ 4. LEARN, REVIEW & LEVEL UP                                  │
   │    After exchange sessions, leave 1-5 star ratings & reviews. │
-  │    Earn skill points, climb the leaderboard, unlock badges!  │
+  │    Earn skill points and review badge milestones!            │
   └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -108,20 +109,20 @@ Skill-Verse solves this through four pillars:
 - Prevents spam: users can only chat once a mutual connection is accepted.
 
 ### 💬 Direct Peer Messaging
-- Built-in, clean messaging interface to coordinate meeting times, share code snippets, or schedule study calls.
+- Built-in REST-based messaging interface to coordinate meeting times, share code snippets, or schedule study calls.
 
 ### 🏆 Gamification & Leaderboard
 - Students start with 0 points.
-- Connecting with peers awards **+10 points**.
-- Receiving a 5-star review awards **+25 points** (5 points per star).
-- Profile badges automatically highlight verified mentors and active collaborators.
+- Connecting with peers awards **+10 points** to both students.
+- Receiving a 5-star review awards **+25 points** (5 points per star) to the mentor.
+- Profile badges showcase platform milestones (*Helpful Mentor*, *Active Learner*, *Great Collaborator*).
 
 ### 📷 Profile Customization & Media
-- Upload custom avatars (stored securely with fast image streaming).
+- Upload custom avatars (stored securely in MongoDB GridFS with fast image streaming).
 - Edit academic branch, graduation year, bio, and add/remove skills on the fly.
 
 ### 🔒 Secure Password Recovery
-- Forget your password? Enter your email to receive a secure, 1-hour single-use reset link.
+- Forget your password? Enter your email to receive a secure, 1-hour single-use reset link generated via `SecureRandom`.
 
 ---
 
@@ -130,18 +131,35 @@ Skill-Verse solves this through four pillars:
 ### Scenario A: The Ideal Two-Way Swap (High Compatibility)
 - **Krish (3rd Year CS):** Teaches *Java, C++, Spring Boot*; Wants to learn *React, Tailwind CSS*.
 - **Aman (2nd Year IT):** Teaches *React, JavaScript, Tailwind*; Wants to learn *Java, Spring Boot*.
-- **Outcome:** The algorithm detects a **Two-Way Mutual Exchange** and scores this match at **95%+**. They connect, set up weekly Zoom sessions, and swap backend and frontend expertise.
+- **Outcome:** The algorithm detects a **Two-Way Mutual Exchange** and scores this match at **95%+**. They connect, set up weekly study sessions, and swap backend and frontend expertise.
 
 ### Scenario B: Senior Mentor to Junior Explorer
 - **Sneha (Final Year):** Expert in *Machine Learning & Python*.
 - **Rohan (1st Year):** Eager to learn *Python basics*.
-- **Outcome:** Rohan requests a connection. Sneha accepts. Rohan gets personalized mentoring, avoiding generic tutorial pitfalls. Rohan leaves Sneha a 5-star review, awarding Sneha +25 Skill Points and contributing to her *Helpful Mentor* badge.
+- **Outcome:** Rohan requests a connection. Sneha accepts. Rohan gets personalized mentoring, avoiding generic tutorial pitfalls. Rohan leaves Sneha a 5-star review, awarding Sneha +25 Skill Points.
 
 ---
 
 # PART 2: TECHNICAL DEEP-DIVE & ARCHITECTURE
 
-## 7. System Architecture & High-Level Design
+## 7. Code Observations & Source-Truth Implementation Details
+
+> [!IMPORTANT]
+> To ensure complete academic and technical accuracy during evaluation, the table below documents the exact implementation in the Java and TypeScript source code versus common documentation misconceptions:
+
+| Feature / Domain | Documentation / Possible Claim | What the Actual Code Does in Source | Source Code Reference |
+| :--- | :--- | :--- | :--- |
+| **Matching Weights** | Claimed as 60% and 40% | `MatchService.java` uses **55%** for learning interest coverage and **35%** for teaching capability coverage. | [MatchService.java](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/backend/src/main/java/com/skillverse/service/MatchService.java#L30-L32) |
+| **Messaging Architecture** | Real-time WebSocket messaging | Uses **REST-based messaging** (`GET /messages/{userId}` and `POST /messages`), not WebSockets. | [MessageController.java](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/backend/src/main/java/com/skillverse/controller/MessageController.java), [messageService.ts](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/src/services/messageService.ts) |
+| **Frontend API Client** | Axios library | Uses a custom wrapper around the native browser **`fetch()`** API (`apiRequest()` in `api.ts`), not Axios. | [src/lib/api.ts](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/src/lib/api.ts#L40) |
+| **JWT Subject Claim** | Stores email as JWT subject | Stores the **`userId`** as the JWT subject (`.subject(userId)`). The user's `email` is stored as an additional custom claim (`.claim("email", email)`). | [JwtService.java](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/backend/src/main/java/com/skillverse/security/JwtService.java#L29-L30) |
+| **Password Reset Token** | Generated using `UUID` | Uses `java.security.SecureRandom` to generate **32 cryptographically random bytes** (URL-safe Base64 encoded), hashed with SHA-256 in MongoDB. | [PasswordResetService.java](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/backend/src/main/java/com/skillverse/service/PasswordResetService.java#L54-L56) |
+| **Badge Engine** | Automatic dynamic badge awarding | The frontend displays **static badge milestone descriptions** (`badges.ts`). While the backend dynamically awards and aggregates `skillPoints` on `User.java`, automated badge unlocking logic is not currently stored as separate entity records. | [src/lib/badges.ts](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/src/lib/badges.ts), [skill-points.tsx](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/src/routes/skill-points.tsx) |
+| **CI/CD Pipeline** | Automated CI/CD deployment | The GitHub Actions workflow (`.github/workflows/ci.yml`) is a **Continuous Integration** pipeline that builds and runs tests (`mvn clean test` and `npm run build`); it **does not deploy** the application to production. | [.github/workflows/ci.yml](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/.github/workflows/ci.yml) |
+
+---
+
+## 8. System Architecture & High-Level Design
 
 Skill-Verse adopts a decoupled **Client-Server Architecture**:
 
@@ -149,10 +167,11 @@ Skill-Verse adopts a decoupled **Client-Server Architecture**:
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                              CLIENT TIER                                │
 │  React 19 • TanStack Start (SSR / Nitro) • TypeScript 5.8 • Tailwind v4 │
+│                     (Native fetch API client: api.ts)                   │
 └────────────────────────────────────┬────────────────────────────────────┘
                                      │
                                      │ HTTPS / JSON REST API
-                                     │ Bearer JWT Authentication
+                                     │ Bearer JWT Authentication (sub = userId)
                                      ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                             API GATEWAY                                 │
@@ -163,7 +182,7 @@ Skill-Verse adopts a decoupled **Client-Server Architecture**:
         ▼                            ▼                            ▼
 ┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
 │   Auth & User    │       │ Match & Ranking  │       │  Social & Chat   │
-│    Services      │       │      Engine      │       │     Services     │
+│    Services      │       │  Engine (55/35)  │       │ (REST Polling)   │
 └────────┬─────────┘       └─────────┬────────┘       └─────────┬────────┘
          │                           │                          │
          └───────────────────────────┼──────────────────────────┘
@@ -183,25 +202,26 @@ Skill-Verse adopts a decoupled **Client-Server Architecture**:
 
 ---
 
-## 8. Tech Stack & Engineering Rationale
+## 9. Tech Stack & Engineering Rationale
 
 | Layer | Technology | Version | Engineering Rationale |
 | :--- | :--- | :--- | :--- |
 | **Backend Runtime** | Java OpenJDK | 17 / 21 LTS | High concurrency, robust memory management, enterprise standard. |
 | **Framework** | Spring Boot | 3.3.4 | Battle-tested REST framework, dependency injection, declarative security. |
 | **Security** | Spring Security | 6.x | Stateless JWT filter chain, BCrypt password hashing, role-free bearer auth. |
-| **Token Auth** | JJWT (`io.jsonwebtoken`) | 0.12.6 | Cryptographic HMAC-SHA512 token signing with 24-hour expiration window. |
+| **Token Auth** | JJWT (`io.jsonwebtoken`) | 0.12.6 | Cryptographic HMAC-SHA512 token signing (`sub: userId`, `claim: email`). |
 | **Database** | MongoDB Atlas | 7.x / Cloud | Flexible document model for polymorphic student skills, reviews, and messages. |
 | **Media Storage** | MongoDB GridFS | Built-in | Native binary chunking for profile photos up to 5MB without external S3 costs. |
 | **Frontend Core** | React | 19.x | Concurrent rendering, latest hooks, optimal reconciliation performance. |
 | **Routing / SSR** | TanStack Start + Nitro | 1.168 | Type-safe file routing, server-side pre-rendering, minimal hydration delay. |
 | **State Fetching** | TanStack Query | 5.x | Automated background refetching, client cache invalidation, loading states. |
+| **HTTP Client** | Native `fetch()` | Web API | Zero-dependency native API client wrapper (`apiRequest` in `api.ts`). |
 | **Styling** | Tailwind CSS | 4.x | High-performance CSS engine with zero runtime overhead and modern utility tokens. |
 | **UI Components** | Radix UI | 1.x / 2.x | Fully accessible, keyboard-navigable headless primitives (Dialogs, Tabs, etc.). |
 
 ---
 
-## 9. Frontend Architecture (React 19 & TanStack Start)
+## 10. Frontend Architecture (React 19 & TanStack Start)
 
 ### File-Based Routing Hierarchy (`src/routes/`)
 - `__root.tsx`: Universal shell wrapper containing global layout, toaster notifications, and authentication provider.
@@ -211,23 +231,23 @@ Skill-Verse adopts a decoupled **Client-Server Architecture**:
 - `find-students.tsx`: Interactive student catalog with real-time text and category filtering.
 - `students.$studentId.tsx`: Detailed public profile view of any peer, showing teach/learn tags and star reviews.
 - `connections.tsx`: Tabbed management for incoming and outgoing connection requests.
-- `messages.tsx`: Real-time chat interface with automatic peer thread selection.
-- `skill-points.tsx`: Gamification page detailing point breakdowns, milestone history, and badges.
+- `messages.tsx`: REST-based chat interface displaying message history with peers.
+- `skill-points.tsx`: Gamification page detailing point breakdowns and badge milestone descriptions.
 - `profile.index.tsx` & `profile.edit.tsx`: Self-profile management and GridFS photo uploader.
 - `forgot-password.tsx` & `reset-password.tsx`: Password recovery interface.
 
 ### State & API Layer (`src/services/` & `src/lib/api.ts`)
-- Axios-based centralized API client (`api.ts`) automatically intercepts outgoing requests to inject the `Authorization: Bearer <token>` header from `localStorage`.
+- Native **`fetch()`** API wrapper (`apiRequest()` in `api.ts`) automatically intercepts outgoing requests to inject the `Authorization: Bearer <token>` header from `localStorage`.
 - Automatically catches `401 Unauthorized` responses to clear invalid sessions and redirect to login.
 
 ---
 
-## 10. Backend Architecture (Spring Boot 3 & Security 6)
+## 11. Backend Architecture (Spring Boot 3 & Security 6)
 
 ### Key Packages:
 - `com.skillverse.config`: Application initialization, CORS policies, and `DataSeeder.java`.
 - `com.skillverse.controller`: 9 REST Controllers handling HTTP endpoints under `/api`.
-- `com.skillverse.dto`: Immutable Java 17+ record DTOs (`Dtos.java`) enforcing validation constraints.
+- `com.skillverse.dto`: Immutable Java 17+ record DTOs (`Dtos.java`) enforcing Jakarta validation constraints.
 - `com.skillverse.model`: Spring Data MongoDB `@Document` entity definitions.
 - `com.skillverse.repository`: Interfaces extending `MongoRepository` with custom query methods.
 - `com.skillverse.security`: `JwtAuthFilter`, `JwtService`, and `SecurityConfig`.
@@ -236,7 +256,7 @@ Skill-Verse adopts a decoupled **Client-Server Architecture**:
 
 ---
 
-## 11. The Complementary Matching Algorithm
+## 12. The Complementary Matching Algorithm
 
 The matching engine in `com.skillverse.service.MatchService` is mathematically formulated to maximize reciprocal benefit.
 
@@ -244,18 +264,18 @@ The matching engine in `com.skillverse.service.MatchService` is mathematically f
 
 $$\text{Final Score} = \min\left(100, \max\left(0, \text{Round}\left(100 \times \left(S_{\text{learn}} \cdot W_{\text{learn}} + S_{\text{teach}} \cdot W_{\text{teach}} + B_{\text{swap}} + B_{\text{interest}} + N_{\text{reputation}}\right)\right)\right)\right)$$
 
-### Parameter Definitions:
+### Parameter Definitions (as coded in `MatchService.java`):
 1. **Weights:**
-   - $W_{\text{learn}} = 0.55$ (55% weight on Student A receiving the skills they desire)
-   - $W_{\text{teach}} = 0.35$ (35% weight on Student A being able to provide what Student B desires)
+   - $W_{\text{learn}} = 0.55$ (**55% weight** on Student A receiving the skills they desire from Student B's teaching skills)
+   - $W_{\text{teach}} = 0.35$ (**35% weight** on Student A being able to provide what Student B wants to learn)
 2. **Coverage Calculation ($S_{\text{learn}}, S_{\text{teach}}$):**
    - Exact Skill Match: Awards `1.0` point.
-   - Related Category Match: If skills differ but share the same category (e.g. *React* and *HTML/CSS* are both *Frontend Development*), awards `0.4` partial credit.
+   - Related Category Match: If skills differ but share the same category (e.g. *React* and *HTML/CSS* are both in *Frontend Development*), awards `0.4` partial credit (`RELATED_CREDIT = 0.4`).
    - Coverage ratio = $\frac{\sum \text{Credits}}{\text{Total Requested Skills}}$.
 3. **Mutual Swap Bonus ($B_{\text{swap}} = +0.10$):**
-   - If Student A can teach Student B **AND** Student B can teach Student A, +10% is added.
+   - If Student A can teach Student B **AND** Student B can teach Student A, **+10%** is added to the score.
 4. **Shared Learning Interest Bonus ($B_{\text{interest}} = +0.03$):**
-   - If both students are concurrently trying to learn the same skill, +3% is added (facilitates study buddy pairs).
+   - If both students are concurrently trying to learn the same skill, **+3%** is added (study buddy incentive).
 5. **Reputation Nudge ($N_{\text{reputation}}$):**
    - Adjusted based on the candidate's average peer star rating ($R \in [1.0, 5.0]$):
      $$N_{\text{reputation}} = \left(\frac{R - 3.0}{2.0}\right) \times 0.04$$
@@ -263,7 +283,7 @@ $$\text{Final Score} = \min\left(100, \max\left(0, \text{Round}\left(100 \times 
 
 ---
 
-## 12. Gamification & Reputation Engine
+## 13. Gamification & Reputation Engine
 
 | Trigger Event | Points Awarded | Beneficiary | System Effect |
 | :--- | :--- | :--- | :--- |
@@ -272,14 +292,16 @@ $$\text{Final Score} = \min\left(100, \max\left(0, \text{Round}\left(100 \times 
 | **3-Star Review** | `+15 Points` | Reviewed Student | Standard performance |
 | **5-Star Review** | `+25 Points` | Reviewed Student | High-performance mentor bonus |
 
-### Badge Definitions:
-- 🏆 **Helpful Mentor:** Awarded to students who accumulate reviews and maintain a $\ge 4.5$ star average.
-- ⭐ **Active Learner:** Awarded to students who maintain at least 3 active learning skills and 2 active connections.
-- 🤝 **Great Collaborator:** Awarded upon maintaining 5 or more accepted peer connections.
+### Badge Milestone Descriptions (`src/lib/badges.ts`):
+- 🏆 **Helpful Mentor:** Recognizes students completing peer teaching sessions.
+- ⭐ **Active Learner:** Recognizes students actively expanding skills across semesters.
+- 🤝 **Great Collaborator:** Recognizes students maintaining active peer connections.
+
+*(Note: While the backend dynamically calculates and stores total `skillPoints`, badge descriptions are presented client-side).*
 
 ---
 
-## 13. Database Schema & Storage (MongoDB & GridFS)
+## 14. Database Schema & Storage (MongoDB & GridFS)
 
 ```mermaid
 erDiagram
@@ -353,16 +375,16 @@ Profile pictures are uploaded as `multipart/form-data` to `POST /api/users/{id}/
 
 ---
 
-## 14. Security & Cryptographic Implementations
+## 15. Security & Cryptographic Implementations
 
 1. **Stateless Authentication (JWT):**
    - Signature Algorithm: `HMAC-SHA512` with a 256-bit+ secret key.
-   - Claims: Subject (`email`), issued-at (`iat`), expiration (`exp` = 24 hours).
+   - Claims: Subject = **`userId`** (`claims.getSubject()`), additional claim = **`email`**, issued-at (`iat`), expiration (`exp` = 24 hours).
    - Validation: Handled via `JwtAuthFilter` on every non-public request.
 2. **Password Security:**
    - Password hashing uses `BCryptPasswordEncoder` with internal work factor (salt rounds = 10). Plaintext passwords are never logged or stored.
 3. **Password Reset Token Security:**
-   - Token is generated using `UUID.randomUUID()`.
+   - Token is generated using `java.security.SecureRandom` (32 cryptographically strong random bytes, URL-safe Base64 encoded).
    - The token sent to the user is hashed with **SHA-256** prior to database storage (`tokenHash`). Even if the database is leaked, raw reset tokens cannot be reconstructed.
    - Tokens are single-use (`used = true`) with a strict 1-hour expiration window.
 4. **CORS & CSRF:**
@@ -371,7 +393,7 @@ Profile pictures are uploaded as `multipart/form-data` to `POST /api/users/{id}/
 
 ---
 
-## 15. Complete REST API Specification
+## 16. Complete REST API Specification
 
 **Base URL:** `http://localhost:8081/api`
 
@@ -402,16 +424,22 @@ Profile pictures are uploaded as `multipart/form-data` to `POST /api/users/{id}/
 | `GET` | `/connections?userId={id}` | Bearer JWT | None | Get incoming/outgoing connection requests |
 | `POST` | `/connections` | Bearer JWT | `{senderId, receiverId}` | Send peer connection request |
 | `PUT` | `/connections/{id}` | Bearer JWT | `{status: "ACCEPTED" \| "REJECTED"}` | Accept or reject connection |
-| `GET` | `/messages/{userId}` | Bearer JWT | None | Get conversation history with peer |
-| `POST` | `/messages` | Bearer JWT | `{senderId, receiverId, message}` | Send direct message |
+| `GET` | `/messages/{userId}` | Bearer JWT | None | Get REST conversation history with peer |
+| `POST` | `/messages` | Bearer JWT | `{senderId, receiverId, message}` | Send direct message via REST |
 | `GET` | `/reviews/{userId}` | Bearer JWT | None | Get student reviews and ratings |
 | `POST` | `/reviews` | Bearer JWT | `{reviewerId, reviewedUserId, rating, comment}` | Submit review & award points |
 
 ---
 
-## 16. DevOps, Docker & Deployment
+## 17. DevOps, CI/CD & Docker
 
-### Backend Multi-Stage Dockerfile (`backend/Dockerfile`)
+### 1. Continuous Integration (GitHub Actions)
+The workflow file [`.github/workflows/ci.yml`](file:///Users/krishkataria/Desktop/Work/SkillVerse%20JAVA/Skill-Verse/.github/workflows/ci.yml) automates verification on pushes and pull requests to `main`:
+- **Backend Job:** Sets up Temurin JDK 17, caches Maven dependencies, and executes `mvn clean test`.
+- **Frontend Job:** Sets up Node.js 20, runs `npm ci`, checks ESLint rules (`npm run lint`), and verifies production build compilation (`npm run build`).
+- **Scope Note:** This pipeline is dedicated to **Continuous Integration (build & test)**; automated deployment to cloud hosts is not configured in this workflow.
+
+### 2. Backend Multi-Stage Dockerfile (`backend/Dockerfile`)
 The backend includes a production-ready, containerized Docker build:
 ```dockerfile
 # Stage 1: Build JAR using Maven
@@ -440,7 +468,7 @@ docker run -p 8081:8081 \
 
 ---
 
-## 17. Step-by-Step Setup & Running Guide
+## 18. Step-by-Step Setup & Running Guide
 
 ### Prerequisites
 - **Java JDK 17 or 21+** (`java -version`)
@@ -507,7 +535,7 @@ Open **[http://localhost:8080](http://localhost:8080)** in your browser!
 
 ---
 
-## 18. Seeded Demo Accounts
+## 19. Seeded Demo Accounts
 
 On initial launch against an empty MongoDB database, the backend automatically seeds **24 skills** and **10 student profiles**.
 
@@ -528,7 +556,7 @@ On initial launch against an empty MongoDB database, the backend automatically s
 
 ---
 
-## 19. Quality Assurance & Testing Suite
+## 20. Quality Assurance & Testing Suite
 
 ### Backend Unit Tests
 Backend test classes use JUnit 5 and Mockito to verify security, calculations, and services:
@@ -536,8 +564,8 @@ Backend test classes use JUnit 5 and Mockito to verify security, calculations, a
 cd backend
 mvn clean test
 ```
-- `JwtServiceTest.java`: Validates token creation, claim extraction, and expiration rejection.
-- `MatchServiceTest.java`: Verifies score calculation accuracy, category matching, and two-way swap bonuses.
+- `JwtServiceTest.java`: Validates token creation, claim extraction (`userId` as subject), and signature validation.
+- `MatchServiceTest.java`: Verifies score calculation accuracy using the 55%/35% weights, category matching, and two-way swap bonuses.
 - `ReviewServiceTest.java`: Asserts point awards and average star rating formulas.
 
 ### Frontend Validation
@@ -548,7 +576,7 @@ npm run build
 
 ---
 
-## 20. Troubleshooting & FAQ
+## 21. Troubleshooting & FAQ
 
 ### Q1: `zsh: command not found: mvn`
 Maven is not in your system PATH. On macOS, run `brew install maven`.
